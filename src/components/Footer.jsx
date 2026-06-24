@@ -9,9 +9,11 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-navy-500 to-teal-500 grid place-items-center text-white font-serif font-extrabold text-sm">
-                SK
-              </div>
+              <img
+                src="/logo.jpg"
+                alt="Sri Krishna Neuro Super Speciality Hospital Logo"
+                className="w-10 h-10 rounded-full object-cover"
+              />
               <span className="font-bold text-white text-sm">Sri Krishna Hospital</span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">
