@@ -5,6 +5,7 @@ import Footer from './components/Footer.jsx'
 import ScrollToTop from './components/ScrollToTop.jsx'
 import Home from './pages/Home.jsx'
 import BookAppointment from './pages/BookAppointment.jsx'
+import MediaRoom from './pages/MediaRoom.jsx'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/book-appointment" element={<BookAppointment />} />
+            <Route path="/media-room" element={<MediaRoom />} />
           </Routes>
         </div>
         <Footer />

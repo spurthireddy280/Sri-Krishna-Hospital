@@ -7,7 +7,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { Link } from 'react-router-dom'
 
 const slides = [
-  { src: '/hero-hospital.png', alt: 'State-of-the-art hospital exterior' },
+  { src: '/sri-krishna-hospital.jpg', alt: 'Sri Krishna Neuro Super Speciality Hospital building' },
   { src: '/operating-theater.png', alt: 'Advanced neurosurgery operating theater' },
   { src: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1920&q=80', alt: 'Compassionate patient care' },
 ]
@@ -92,11 +92,11 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.35 }}
               className="font-serif text-[clamp(2.4rem,5.5vw,4.5rem)] font-bold text-white leading-[1.08] tracking-tight mb-6"
             >
-              Advanced Care.
+              Sri Krishna
               <br />
-              <span className="text-gradient">Compassionate Healing.</span>
+              <span className="text-gradient">Neuro Super Speciality</span>
               <br />
-              The Trusted Hospital of Hyderabad.
+              Hospital.
             </motion.h1>
 
             {/* Description */}

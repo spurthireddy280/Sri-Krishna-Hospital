@@ -11,7 +11,7 @@ const links = [
   { label: 'Our Doctors', href: 'doctors' },
   { label: 'Services', href: 'services' },
   { label: 'Insurance', href: 'insurance' },
-  { label: 'Media Room', href: 'testimonials' },
+  { label: 'Media Room', href: '/media-room', isRoute: true },
   { label: 'Blogs', href: 'contact' },
   { label: 'Contact Us', href: 'contact' },
 ]
@@ -70,9 +70,11 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-5 flex items-center justify-between h-[68px] transition-all">
         {/* Logo */}
         <Link to="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 shrink-0 group">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-navy-500 to-teal-500 grid place-items-center text-white font-serif font-extrabold text-lg shadow-lg shadow-navy-500/25 group-hover:rotate-[-4deg] group-hover:scale-105 transition-transform duration-300">
-            SK
-          </div>
+          <img
+            src="/logo.jpg"
+            alt="Sri Krishna Neuro Super Speciality Hospital Logo"
+            className="w-11 h-11 rounded-full object-cover shadow-lg group-hover:scale-105 transition-transform duration-300"
+          />
           <div className="leading-tight">
             <div className="font-bold text-[0.92rem] text-slate-900 tracking-tight">Sri Krishna Hospital</div>
             <div className="text-[0.62rem] font-semibold text-teal-600 uppercase tracking-[0.1em]">Neuro & Multi Speciality</div>
@@ -83,14 +85,24 @@ export default function Navbar() {
         <ul className="hidden xl:flex items-center gap-0.5">
           {links.map((link) => (
             <li key={link.label}>
-              <a
-                href={`/#${link.href}`}
-                onClick={(e) => handleNavClick(e, link.href)}
-                className="relative px-3.5 py-2 text-[0.84rem] font-medium text-slate-500 hover:text-navy-600 hover:bg-navy-50 rounded-lg transition-all whitespace-nowrap group"
-              >
-                {link.label}
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 group-hover:w-1/2 h-0.5 bg-gradient-to-r from-navy-500 to-teal-500 rounded-full transition-all duration-300" />
-              </a>
+              {link.isRoute ? (
+                <Link
+                  to={link.href}
+                  className="relative px-3.5 py-2 text-[0.84rem] font-medium text-slate-500 hover:text-navy-600 hover:bg-navy-50 rounded-lg transition-all whitespace-nowrap group"
+                >
+                  {link.label}
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 group-hover:w-1/2 h-0.5 bg-gradient-to-r from-navy-500 to-teal-500 rounded-full transition-all duration-300" />
+                </Link>
+              ) : (
+                <a
+                  href={`/#${link.href}`}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  className="relative px-3.5 py-2 text-[0.84rem] font-medium text-slate-500 hover:text-navy-600 hover:bg-navy-50 rounded-lg transition-all whitespace-nowrap group"
+                >
+                  {link.label}
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 group-hover:w-1/2 h-0.5 bg-gradient-to-r from-navy-500 to-teal-500 rounded-full transition-all duration-300" />
+                </a>
+              )}
             </li>
           ))}
         </ul>
@@ -144,13 +156,23 @@ export default function Navbar() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05 }}
                   >
-                    <a
-                      href={`/#${link.href}`}
-                      onClick={(e) => handleNavClick(e, link.href)}
-                      className="block px-4 py-3 text-slate-600 hover:text-navy-600 hover:bg-navy-50 rounded-lg transition-all font-medium"
-                    >
-                      {link.label}
-                    </a>
+                    {link.isRoute ? (
+                      <Link
+                        to={link.href}
+                        onClick={() => setMobileOpen(false)}
+                        className="block px-4 py-3 text-slate-600 hover:text-navy-600 hover:bg-navy-50 rounded-lg transition-all font-medium"
+                      >
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <a
+                        href={`/#${link.href}`}
+                        onClick={(e) => handleNavClick(e, link.href)}
+                        className="block px-4 py-3 text-slate-600 hover:text-navy-600 hover:bg-navy-50 rounded-lg transition-all font-medium"
+                      >
+                        {link.label}
+                      </a>
+                    )}
                   </motion.li>
                 ))}
                 <li className="mt-4">
