@@ -2,9 +2,9 @@
  * Hero — Full-height immersive section with slider, parallax zoom, search, animated stats
  */
 import { useState, useEffect, useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const slides = [
   { src: '/sri-krishna-hospital.jpg', alt: 'Sri Krishna Neuro Super Speciality Hospital building' },
@@ -19,9 +19,51 @@ const stats = [
   { value: 200, label: 'Beds Available' },
 ]
 
+/* Searchable dataset */
+const searchData = [
+  // Doctors
+  { label: 'Dr. Anil Kumar — Chief Neurosurgeon', type: 'Doctor', action: 'route', target: '/book-appointment' },
+  { label: 'Dr. Priya Sharma — Consultant Cardiologist', type: 'Doctor', action: 'route', target: '/book-appointment' },
+  { label: 'Dr. Rajesh Verma — Senior Orthopedic Surgeon', type: 'Doctor', action: 'route', target: '/book-appointment' },
+  { label: 'Dr. Meera Iyer — Consultant Neurologist', type: 'Doctor', action: 'route', target: '/book-appointment' },
+  { label: 'Dr Aniket S Phutane — Neurosciences', type: 'Doctor', action: 'route', target: '/book-appointment' },
+  { label: 'Dr P Vijay Anand Reddy — Oncology', type: 'Doctor', action: 'route', target: '/book-appointment' },
+  { label: 'Dr Pratap Chandra Rath — Cardiology', type: 'Doctor', action: 'route', target: '/book-appointment' },
+  { label: 'Dr Somasekhar M — Nephrology', type: 'Doctor', action: 'route', target: '/book-appointment' },
+  // Health Packages
+  { label: 'Senior Citizen Package — ₹5,000', type: 'Package', action: 'scroll', target: 'packages' },
+  { label: 'Master Cardiac Package — ₹5,000', type: 'Package', action: 'scroll', target: 'packages' },
+  { label: 'Basic Cardiac Package — ₹2,500', type: 'Package', action: 'scroll', target: 'packages' },
+  { label: 'Routine Health Checkup — ₹900', type: 'Package', action: 'scroll', target: 'packages' },
+  { label: 'Diabetic Health Checkup — ₹1,200', type: 'Package', action: 'scroll', target: 'packages' },
+  { label: 'Renal Package — ₹1,200', type: 'Package', action: 'scroll', target: 'packages' },
+  // Services
+  { label: 'Cardiology', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Neurology', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Neurosurgery', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Nephrology', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Urology', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Orthopedics', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Pediatrics & Neonatology', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'General Medicine', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'General Surgery', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Plastic Surgery', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Critical Care', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'CT Scanning', type: 'Service', action: 'scroll', target: 'services' },
+  { label: '2D Echo', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Dialysis', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Physiotherapy', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Ambulance', type: 'Service', action: 'scroll', target: 'services' },
+  { label: 'Pharmacy', type: 'Service', action: 'scroll', target: 'services' },
+]
+
 export default function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showResults, setShowResults] = useState(false)
   const sectionRef = useRef(null)
+  const searchRef = useRef(null)
+  const navigate = useNavigate()
 
   // Parallax
   const { scrollYProgress } = useScroll({
@@ -38,6 +80,51 @@ export default function Hero() {
     }, 6000)
     return () => clearInterval(timer)
   }, [])
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowResults(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Filter results
+  const query = searchQuery.trim().toLowerCase()
+  const filteredResults = query.length >= 2
+    ? searchData.filter(item => item.label.toLowerCase().includes(query))
+    : []
+
+  // Group results by type
+  const groupedResults = {}
+  filteredResults.forEach(item => {
+    if (!groupedResults[item.type]) groupedResults[item.type] = []
+    groupedResults[item.type].push(item)
+  })
+
+  const handleResultClick = (item) => {
+    setSearchQuery('')
+    setShowResults(false)
+    if (item.action === 'route') {
+      navigate(item.target)
+    } else {
+      const el = document.querySelector(`#${item.target}`)
+      if (el) {
+        const offset = 80
+        const y = el.getBoundingClientRect().top + window.scrollY - offset
+        window.scrollTo({ top: y, behavior: 'smooth' })
+      }
+    }
+  }
+
+  const handleSearchSubmit = () => {
+    if (filteredResults.length > 0) {
+      handleResultClick(filteredResults[0])
+    }
+  }
 
   return (
     <section id="home" ref={sectionRef} className="relative min-h-screen flex items-center overflow-hidden bg-navy-950">
@@ -132,19 +219,64 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
-              className="max-w-xl"
+              className="max-w-xl relative"
+              ref={searchRef}
             >
               <div className="flex items-center gap-3 px-5 py-1.5 rounded-2xl glass transition-all focus-within:border-teal-400/50 focus-within:bg-white/10">
                 <svg className="w-5 h-5 text-white/35 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input
                   type="text"
                   placeholder="Search doctors, services, or health packages..."
+                  value={searchQuery}
+                  onChange={(e) => { setSearchQuery(e.target.value); setShowResults(true) }}
+                  onFocus={() => { if (searchQuery.trim().length >= 2) setShowResults(true) }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSearchSubmit() }}
                   className="flex-1 bg-transparent border-none outline-none text-white text-sm py-3.5 placeholder:text-white/30"
                 />
-                <button className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-navy-500 text-white font-semibold text-sm rounded-xl hover:scale-[1.04] hover:shadow-lg hover:shadow-teal-500/25 transition-all whitespace-nowrap">
+                <button
+                  onClick={handleSearchSubmit}
+                  className="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-navy-500 text-white font-semibold text-sm rounded-xl hover:scale-[1.04] hover:shadow-lg hover:shadow-teal-500/25 transition-all whitespace-nowrap"
+                >
                   Find Now
                 </button>
               </div>
+
+              {/* Search Results Dropdown */}
+              <AnimatePresence>
+                {showResults && query.length >= 2 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-slate-200 overflow-hidden z-50 max-h-[320px] overflow-y-auto"
+                  >
+                    {filteredResults.length === 0 ? (
+                      <div className="px-5 py-6 text-center text-slate-400 text-sm">
+                        No results found for "<span className="font-semibold text-slate-600">{searchQuery}</span>"
+                      </div>
+                    ) : (
+                      Object.entries(groupedResults).map(([type, items]) => (
+                        <div key={type}>
+                          <div className="px-4 py-2 bg-slate-50 text-[0.68rem] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                            {type === 'Doctor' ? '👨‍⚕️ Doctors' : type === 'Package' ? '📦 Health Packages' : '🏥 Services'}
+                          </div>
+                          {items.map((item) => (
+                            <button
+                              key={item.label}
+                              onClick={() => handleResultClick(item)}
+                              className="w-full text-left px-5 py-3 text-sm text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition-colors flex items-center gap-3 border-b border-slate-50 last:border-0"
+                            >
+                              <svg className="w-4 h-4 text-slate-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                              {item.label}
+                            </button>
+                          ))}
+                        </div>
+                      ))
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
 
             {/* Stats */}

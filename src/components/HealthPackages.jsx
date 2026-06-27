@@ -4,6 +4,7 @@
  */
 import { useState, useRef } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
+import BookingModal from './BookingModal.jsx'
 
 const packages = [
   {
@@ -119,8 +120,32 @@ const packages = [
 export default function HealthPackages() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-60px' })
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedPackage, setSelectedPackage] = useState(null)
+  const [bookedPackages, setBookedPackages] = useState(() => {
+    try {
+      const saved = localStorage.getItem('bookedPackages')
+      return saved ? JSON.parse(saved) : []
+    } catch {
+      return []
+    }
+  })
+
+  const openBookingModal = (pkg) => {
+    setSelectedPackage(pkg)
+    setIsModalOpen(true)
+  }
+
+  const handleBooked = (packageName) => {
+    const updated = [...bookedPackages, packageName]
+    setBookedPackages(updated)
+    localStorage.setItem('bookedPackages', JSON.stringify(updated))
+  }
+
+  const availablePackages = packages.filter(pkg => !bookedPackages.includes(pkg.name))
 
   return (
+    <>
     <section id="packages" className="py-28 lg:py-32 bg-gradient-to-b from-white via-slate-50/50 to-white relative overflow-hidden">
       {/* Subtle decorative blobs */}
       <div className="absolute top-20 right-0 w-[400px] h-[400px] bg-teal-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
@@ -147,14 +172,14 @@ export default function HealthPackages() {
 
         {/* Package Grid */}
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {packages.map((pkg, i) => (
+          {availablePackages.map((pkg, i) => (
             <motion.div
               key={pkg.name}
               initial={{ opacity: 0, y: 40 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, delay: 0.08 * i, ease: [0.16, 1, 0.3, 1] }}
             >
-              <PackageCard pkg={pkg} />
+              <PackageCard pkg={pkg} onBook={() => openBookingModal(pkg)} />
             </motion.div>
           ))}
         </div>
@@ -174,11 +199,19 @@ export default function HealthPackages() {
         </motion.div>
       </div>
     </section>
+
+    <BookingModal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      healthPackage={selectedPackage}
+      onBooked={handleBooked}
+    />
+    </>
   )
 }
 
 /** Individual Package Card with expandable test list */
-function PackageCard({ pkg }) {
+function PackageCard({ pkg, onBook }) {
   const [expanded, setExpanded] = useState(false)
 
   return (
@@ -275,12 +308,12 @@ function PackageCard({ pkg }) {
 
       {/* Book Now footer */}
       <div className="px-6 pb-5 pt-1">
-        <a
-          href="#"
-          className={`block text-center py-3 rounded-xl bg-gradient-to-r ${pkg.color} text-white font-semibold text-sm shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 opacity-90 hover:opacity-100`}
+        <button
+          onClick={onBook}
+          className={`block w-full text-center py-3 rounded-xl bg-gradient-to-r ${pkg.color} text-white font-semibold text-sm shadow-md hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 opacity-90 hover:opacity-100`}
         >
           Book This Package
-        </a>
+        </button>
       </div>
     </div>
   )
